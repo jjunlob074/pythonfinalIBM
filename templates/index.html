@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario SPA</title>
+    <style>
+        body, html {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #264653 0%, #14213d 100%);
+            color: #333;
+            display: flex;
+            justify-content: center; 
+            align-items: center;
+            background-attachment: fixed;
+            background-size: cover;
+            transition: background-position 0.3s ease-in-out;
+        }
+
+        .app-container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            margin: 1rem auto;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background-color: white;
+            animation: slideUp 1s ease-out;
+        }
+
+        .sidebar {
+            flex: 1;
+            margin-right: 20px;
+            background-color: #f5f3f4;
+            border-radius: 8px;
+            padding: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        .product-container {
+            flex: 2;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 1rem;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.8);
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            margin-right: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .redbutton {
+            background-color: #C82333;
+        }
+
+        .redbutton:hover {
+            background-color: #e33e4f;
+            border-color: #C82333;
+        }
+
+        .yellowbutton {
+            background-color: #E0A800;
+        }
+
+        .yellowbutton:hover {
+            background-color: #ecbf35;
+            border-color: #E0A800;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .producto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #17a2b8;
+            color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(23, 162, 184, 0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease, opacity 0.3s ease;
+        }
+
+        .producto-item:hover {
+            transform: scale(1.01);
+            background-color: #138496;
+            opacity: 0.9;
+        }
+
+        .producto-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .producto-nombre, .producto-categoria, .producto-precio, .producto-cantidad {
+            margin-bottom: 5px;
+        }
+
+        .producto-acciones {
+            display: flex;
+            gap: 10px;
+        }
+
+        .paginacion {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .paginacion span {
+            margin: 0 5px;
+            padding: 10px 15px;
+            border: 1px solid #007bff;
+            background-color: #f8f9fa;
+            color: #007bff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+        }
+
+        .paginacion span:hover {
+            background-color: #007bff;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .paginacion span.active {
+            background-color: #007bff;
+            color: white;
+            transform: scale(1.15);
+        }
+
+        .mensaje {
+            text-align: center;
+            color: #e36414;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .detalle-producto {
+            background-color: #e8e8e4;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .detalle-producto h2 {
+            margin: 0 0 10px 0;
+            color: #007bff;
+        }
+
+        .boton-inventario {
+            background-color: #28a745;
+        }
+
+        .boton-inventario:hover {
+            background-color: #218838;
+        }
+
+        @media (max-width: 768px) {
+            body{
+                height: 100%;
+            }
+            .app-container {
+                display: flex;
+                flex-direction: column;
+                padding: 20px 15px; /* Padding a la derecha e izquierda */
+                overflow-x: auto; /* Permitir scroll horizontal si hay desbordamiento */
+            }
+
+            .sidebar {
+                margin: 0 0 20px 0; /* Eliminar margen lateral, solo dejar el margen inferior */
+                padding: 30px;
+            }
+
+            .product-container {
+                flex: 1;
+                flex-direction: column;
+            }
+            .producto-item{
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+
+
+        /* Animaciones */
+        @keyframes slideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <h1>Inventario</h1>
+            <input type="text" id="nombre" placeholder="Nombre del producto (Requerido)" required>
+            <input type="text" id="categoria" placeholder="Categoría (Requerido)" required>
+            <input type="number" id="precio" placeholder="Precio (Dejar vacío para 1.0)" min="0.01" step="0.01">
+            <input type="number" id="cantidad" placeholder="Cantidad (Dejar vacío para 0)" min="0" step="1">
+            <button onclick="agregarProducto()">Agregar Producto</button>
+            <h2>Buscar Producto</h2>
+            <input type="text" id="buscar-nombre" placeholder="Nombre del producto a buscar">
+            <button onclick="buscarProducto()">Buscar Producto</button>
+            <button onclick="obtenerProductos()" class="boton-inventario">Mostrar Todo el Inventario</button>
+        </div>
+        <div class="product-container">
+            <h2>Productos</h2>
+            <div id="mensaje" class="mensaje"></div>
+            <ul id="productos-lista"></ul>
+            <div class="paginacion" id="paginacion"></div>
+            <div id="detalle" class="detalle-producto" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let productos = [];
+        let paginaActual = 1;
+        const productosPorPagina = 4;
+
+        async function obtenerProductos() {
+            const response = await fetch('/api/productos');
+            productos = await response.json();
+            if (productos.length == 0) {
+                document.getElementById('mensaje').innerText = 'No hay productos en el inventario.';
+                document.getElementById('productos-lista').innerHTML = '';
+                document.getElementById('paginacion').innerHTML = '';
+                return;
+            }
+            mostrarProductos(productos);
+            document.getElementById('detalle').style.display = 'none'; // Ocultar detalles
+        }
+
+        async function agregarProducto() {
+            const nombre = document.getElementById('nombre').value;
+            const categoria = document.getElementById('categoria').value;
+            let precio = parseFloat(document.getElementById('precio').value) || 1.0;
+            let cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+
+            const producto = { nombre, categoria, precio, cantidad };
+
+            const response = await fetch('/api/producto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(producto)
+            });
+
+            const result = await response.json();
+            document.getElementById('mensaje').innerText = result.message || result.error;
+            obtenerProductos();
+        }
+
+        async function buscarProducto() {
+            document.getElementById('mensaje').innerText = '';
+            const nombreBuscar = document.getElementById('buscar-nombre').value.toUpperCase();
+            const response = await fetch(`/api/producto/${nombreBuscar}`);
+            const result = await response.json();
+            if (result.error) {
+                document.getElementById('mensaje').innerText = 'no hay ningún producto que coincida';
+                document.getElementById('detalle').style.display = 'none'; // Ocultar detalles
+                document.getElementById('productos-lista').innerHTML = ''; // Limpiar lista de productos
+                document.getElementById('paginacion').innerHTML = ''; // Limpiar paginación
+            } else {
+                mostrarDetalleProducto(result);
+                document.getElementById('productos-lista').innerHTML = ''; // Limpiar lista de productos
+                document.getElementById('paginacion').innerHTML = ''; // Limpiar paginación
+            }
+        }
+
+        function mostrarDetalleProducto(producto) {
+            const detalle = document.getElementById('detalle');
+            detalle.style.display = 'block'; // Mostrar detalles
+            detalle.innerHTML = `
+                <h2>${producto.nombre}</h2>
+                <p><strong>Categoría:</strong> ${producto.categoria}</p>
+                <p><strong>Precio:</strong> $${producto.precio.toFixed(2)}</p>
+                <p><strong>Cantidad:</strong> ${producto.cantidad}</p>
+                <button class="yellowbutton" onclick="editarProducto('${producto.nombre}')">Editar</button>
+                <button class="redbutton" onclick="eliminarProducto('${producto.nombre}')">Eliminar</button>
+            `;
+        }
+
+        async function editarProducto(nombre) {
+            const nuevoPrecio = prompt("Nuevo precio:");
+            const nuevaCantidad = prompt("Nueva cantidad:");
+
+            const productoActualizado = {};
+            if (nuevoPrecio) productoActualizado.precio = nuevoPrecio;
+            if (nuevaCantidad) productoActualizado.cantidad = nuevaCantidad;
+
+            const response = await fetch(`/api/producto/${nombre}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productoActualizado)
+            });
+
+            const result = await response.json();
+            document.getElementById('mensaje').innerText = result.message || result.error;
+            obtenerProductos();
+        }
+
+        async function eliminarProducto(nombre) {
+            const response = await fetch(`/api/producto/${nombre}`, {
+                method: 'DELETE'
+            });
+            console.log(document.getElementById('detalle').style.display);
+            document.getElementById('detalle').style.display = 'none';
+            const result = await response.json();
+            document.getElementById('mensaje').innerText = result.message || result.error;
+            obtenerProductos();
+        }
+
+        function mostrarProductos(productosAMostrar = productos) {
+            const listaProductos = document.getElementById('productos-lista');
+            listaProductos.innerHTML = '';
+
+            const inicio = (paginaActual - 1) * productosPorPagina;
+            const productosPaginados = productosAMostrar.slice(inicio, inicio + productosPorPagina);
+
+            productosPaginados.forEach(producto => {
+                const li = document.createElement('li');
+                li.classList.add('producto-item'); // Añadir clase para estilo
+                li.innerHTML = `
+                    <div class="producto-info">
+                        <span class="producto-nombre"><strong>NOMBRE: </strong>${producto.nombre.length > 12 ? producto.nombre.slice(0, 12) + '...' : producto.nombre}</span>
+                        <span class="producto-categoria"><strong>CATEGORIA: </strong>${producto.categoria}</span>
+                        <span class="producto-precio"><strong>PRECIO: </strong>$${producto.precio.toFixed(2)}</span>
+                        <span class="producto-cantidad"><strong>CANTIDAD: </strong>${producto.cantidad}</span>
+                    </div>
+                    <div class="producto-acciones">
+                        <button class="yellowbutton" onclick="editarProducto('${producto.nombre}')">Editar</button>
+                        <button class="redbutton" onclick="eliminarProducto('${producto.nombre}')">Eliminar</button>
+                    </div>
+                `;
+                listaProductos.appendChild(li);
+            });
+
+            crearPaginacion(productosAMostrar.length);
+        }
+
+        function crearPaginacion(totalProductos) {
+            const totalPaginas = Math.ceil(totalProductos / productosPorPagina);
+            const paginacion = document.getElementById('paginacion');
+            paginacion.innerHTML = '';
+
+            for (let i = 1; i <= totalPaginas; i++) {
+                const span = document.createElement('span');
+                span.innerText = i;
+                if (i === paginaActual) {
+                    span.classList.add('active'); // Marca la página actual
+                }
+                span.addEventListener('click', () => {
+                    paginaActual = i;
+                    mostrarProductos();
+                });
+                paginacion.appendChild(span);
+            }
+        }
+
+        // Cargar productos al iniciar la página
+        window.onload = obtenerProductos;
+    </script>
+</body>
+</html>
+
